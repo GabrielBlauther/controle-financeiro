@@ -1,32 +1,40 @@
+version: '3.8'
+
 services:
+  app:
+    build: .
+    container_name: meu-bolso-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/meu-bolso
+      - PORT=3000
+      - JWT_SIGNATURE=sua_chave_secreta_super_forte
+      - JWT_EXPIRES_IN_ACCESS=15m
+      - JWT_EXPIRES_IN_REFRESH=7d
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+
   mongo:
     image: mongo:4
     container_name: mongo
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
       - dbdata:/data/db
-    # networks:
-    #   - shared-network
-  
+
   mongo-express:
     image: mongo-express
     container_name: mongo-express
-
     ports:
-      - 8081:8081
-    links:
-      - mongo
+      - "8081:8081"
     depends_on:
       - mongo
     environment:
       - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017
-     
-  
 
 volumes:
   dbdata:
-
-# networks:
-#   shared-network:
-#     external: true
